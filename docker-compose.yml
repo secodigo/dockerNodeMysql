@@ -6,8 +6,8 @@ services:
         build:
             context: ./node
             dockerfile: Dockerfile
-        image: secodigo/node
         container_name: node
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 30s node server.js
         networks:
             - nodenet
         volumes: 
@@ -20,7 +20,6 @@ services:
         build:
             context: ./nginx
             dockerfile: Dockerfile
-        image: secodigo/nginx
         container_name: nginx
         networks:
             - nodenet
