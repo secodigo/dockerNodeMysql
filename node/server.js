@@ -8,16 +8,52 @@ const config = {
     database: 'nodedb'
 }
 const mysql = require('mysql');
+
+const sqlInsert = `INSERT INTO people(name) values('rodrigo')`
+
+const sqlSelectPeoples = `Select * from people;`
 const connection = mysql.createConnection(config);
 
-const sql = `INSERT INTO people(name) values('rodrigo')`
-connection.query(sql);
-connection.end();
+function createDatabase() {
+    var sql = "CREATE DATABASE IF NOT EXISTS nodedb;";
+    connection.query(sql, function (err, result) {
+        if (err)
+            throw err;
+        console.log("DATABASE CREATED");
+    });
+}
 
-app.get('/', (req, res) => {
-    res.send('<h1>Full Cycle</h1>')
+connection.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    createDatabase();
+    createTablePeople();
+  });
+
+app.get('/', async (req, res) => {
+    await connection.query(sqlInsert);
+    
+    await connection.query(sqlSelectPeoples, async function (err, rows, fields) {
+        if (err) throw err;
+        let values = "";
+        rows.forEach( (row) => {
+            values += '<div>' + (`${row.id} - ${row.name}`) + '</div>';
+        });
+        res.send('<h1>Full Cycle Rocks!</h1>'+ values)
+    });
 })
 
 app.listen(port, () => {
     console.log('rodando na porta' + port)
 })
+
+
+function createTablePeople() {
+    var sql = "CREATE TABLE if not exists people (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255))";
+    connection.query(sql, function (err, result) {
+        if (err)
+            throw err;
+        console.log("Table created");
+    });
+}
+
