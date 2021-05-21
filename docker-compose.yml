@@ -7,12 +7,11 @@ services:
             context: ./node
             dockerfile: Dockerfile
         container_name: node
-        entrypoint: dockerize -wait tcp://db:3306 -timeout 30s node server.js
+        entrypoint: dockerize -wait tcp://db:3306 -timeout 30s npm start
         networks:
             - nodenet
         volumes: 
             - ./node:/usr/src/app
-            - /usr/src/app/node_modules
         tty: true
 
         
@@ -43,3 +42,4 @@ services:
 networks: 
     nodenet:
         driver: bridge
+          
